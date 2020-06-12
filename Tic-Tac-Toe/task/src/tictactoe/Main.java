@@ -41,7 +41,6 @@ public class Main {
 
     private static int[] takeMove(char[][] field) {
         Integer[] possibleCoordinates = {1, 2, 3};
-        int[] coordinates = {0, 0};
         int c0 = 4;
         int c1 = 4;
         boolean hasC0;
@@ -80,9 +79,7 @@ public class Main {
         }
         while (!(hasC0 && hasC1 && isEmpty));
 
-        coordinates[0] = c0;
-        coordinates[1] = c1;
-        return coordinates;
+        return new int[] {c0, c1};
     }
 
     private static boolean checkIfEmpty(int c0, int c1, char[][] field) {
@@ -101,7 +98,7 @@ public class Main {
     }
 
     public static int[] mapInputToNormalCoordinates(int n1, int n2) {
-        int i = Integer.parseInt(String.valueOf(n1).concat(String.valueOf(n2)));
+        int i = n1 * 10 + n2;
 
         switch (i) {
             case 11:
