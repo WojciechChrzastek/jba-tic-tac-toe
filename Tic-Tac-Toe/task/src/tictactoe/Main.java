@@ -7,25 +7,26 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-//        char[] inputField = takeInputField();
-        final char[][] field = createField(takeInputField());
+        int i = 1;
+        char[][] field = createBlankField();
         printField(field);
-        final int[] coordinates = takeInputCoordinates(field);
-        printFieldAfterMove(field, coordinates);
-//        findState(inputField);
+        while (!(findState(field).equals("X wins") ||
+                findState(field).equals("O wins") ||
+                findState(field).equals("Draw"))) {
+            int[] move = takeMove(field);
+            printFieldAfterMove(field, move, determinePlayer(i));
+            findState(field);
+            i++;
+        }
+        printResult(findState(field));
         scanner.close();
     }
 
-    private static char[] takeInputField() {
-        System.out.print("Enter cells: ");
-        return scanner.next().toCharArray();
-    }
-
-    private static char[][] createField(char[] input) {
+    private static char[][] createBlankField() {
         char[][] field = new char[3][3];
-        field[0] = new char[]{input[0], input[1], input[2]};
-        field[1] = new char[]{input[3], input[4], input[5]};
-        field[2] = new char[]{input[6], input[7], input[8]};
+        field[0] = new char[]{'O', ' ', ' '};
+        field[1] = new char[]{'O', 'X', ' '};
+        field[2] = new char[]{' ', ' ', 'X'};
         return field;
     }
 
@@ -38,14 +39,8 @@ public class Main {
         System.out.println("---------");
     }
 
-    private static void printFieldAfterMove(char[][] field, int[] coordinates) {
-        int[] c = mapInputToNormalCoordinates(coordinates[0], coordinates[1]);
-        field[c[0]][c[1]] = 'X';
-        printField(field);
-    }
-
-    private static int[] takeInputCoordinates(char[][] field) {
-        Integer[] possibleInputs = {1, 2, 3};
+    private static int[] takeMove(char[][] field) {
+        Integer[] possibleCoordinates = {1, 2, 3};
         int[] coordinates = {0, 0};
         int c0 = 4;
         int c1 = 4;
@@ -55,6 +50,7 @@ public class Main {
 
         do {
             System.out.print("Enter the coordinates: ");
+//            String coordinatesInput = scanner.nextLine();
             scanner.nextLine();
             hasC0 = false;
             hasC1 = false;
@@ -62,15 +58,15 @@ public class Main {
 
             if (scanner.hasNextInt()) {
                 c0 = scanner.nextInt();
-                if (!(Arrays.asList(possibleInputs).contains(c0))) {
+                if (!(Arrays.asList(possibleCoordinates).contains(c0))) {
                     System.out.println("Coordinates should be from 1 to 3!");
-                } else if (Arrays.asList(possibleInputs).contains(c0)) {
+                } else if (Arrays.asList(possibleCoordinates).contains(c0)) {
                     hasC0 = true;
                     if (scanner.hasNextInt()) {
                         c1 = scanner.nextInt();
-                        if (!(Arrays.asList(possibleInputs).contains(c1))) {
+                        if (!(Arrays.asList(possibleCoordinates).contains(c1))) {
                             System.out.println("Coordinates should be from 1 to 3!");
-                        } else if (Arrays.asList(possibleInputs).contains(c1)) {
+                        } else if (Arrays.asList(possibleCoordinates).contains(c1)) {
                             hasC1 = true;
                             if (checkIfEmpty(c0, c1, field)) {
                                 isEmpty = true;
@@ -91,6 +87,21 @@ public class Main {
         coordinates[0] = c0;
         coordinates[1] = c1;
         return coordinates;
+    }
+
+    private static boolean checkIfEmpty(int c0, int c1, char[][] field) {
+        int[] c = mapInputToNormalCoordinates(c0, c1);
+        return field[c[0]][c[1]] == ' ';
+    }
+
+    private static char determinePlayer(int i) {
+        return i % 2 == 0 ? 'O' : 'X';
+    }
+
+    private static void printFieldAfterMove(char[][] field, int[] coordinates, char c) {
+        int[] normalCoordinates = mapInputToNormalCoordinates(coordinates[0], coordinates[1]);
+        field[normalCoordinates[0]][normalCoordinates[1]] = c;
+        printField(field);
     }
 
     public static int[] mapInputToNormalCoordinates(int n1, int n2) {
@@ -137,11 +148,6 @@ public class Main {
         return new int[] {n1, n2};
     }
 
-    private static boolean checkIfEmpty(int c0, int c1, char[][] field) {
-        int[] c = mapInputToNormalCoordinates(c0, c1);
-        return field[c[0]][c[1]] == '_';
-    }
-
     private static int countChar(char[] chars, char c) {
         int count = 0;
         for (char ch : chars) {
@@ -152,15 +158,16 @@ public class Main {
         return count;
     }
 
-    private static void findState(char[] input, char[][]field) {
+    private static String findState(char[][]field) {
         boolean xHasRow = false;
         boolean oHasRow = false;
+        String result = "";
 
-        char[] col1 = new char[]{input[0], input[3], input[6]};
-        char[] col2 = new char[]{input[1], input[4], input[7]};
-        char[] col3 = new char[]{input[2], input[5], input[8]};
-        char[] down = new char[]{input[0], input[4], input[8]};
-        char[] up = new char[]{input[6], input[4], input[2]};
+        char[] col1 = new char[]{field[0][0], field[1][0], field[2][0]};
+        char[] col2 = new char[]{field[0][1], field[1][1], field[2][1]};
+        char[] col3 = new char[]{field[0][2], field[1][2], field[2][2]};
+        char[] down = new char[]{field[0][0], field[1][1], field[2][2]};
+        char[] up = new char[]{field[2][0], field[1][1], field[0][2]};
 
         int countX = countChar(col1, 'X') + countChar(col2, 'X') + countChar(col3, 'X');
         int countO = countChar(col1, 'O') + countChar(col2, 'O') + countChar(col3, 'O');
@@ -191,23 +198,41 @@ public class Main {
         }
 
         if (((countX - countO) >= 2) || ((countO - countX) >= 2) || (xHasRow && oHasRow)) {
-            System.out.println("Impossible");
+            result = "Impossible";
         } else if (
-                ((countChar(col1, '_') > 0) && (!xHasRow && !oHasRow)) ||
-                        ((countChar(col2, '_') > 0) && (!xHasRow && !oHasRow)) ||
-                        ((countChar(col3, '_') > 0) && (!xHasRow && !oHasRow))
+                ((countChar(col1, ' ') > 0) && (!xHasRow && !oHasRow)) ||
+                        ((countChar(col2, ' ') > 0) && (!xHasRow && !oHasRow)) ||
+                        ((countChar(col3, ' ') > 0) && (!xHasRow && !oHasRow))
         ) {
-            System.out.println("Game not finished");
+            result = "Game not finished";
         } else if (
-                (countChar(col1, '_') == 0) &&
-                        (countChar(col2, '_') == 0) &&
-                        (countChar(col3, '_') == 0) && (!xHasRow && !oHasRow)
+                (countChar(col1, ' ') == 0) &&
+                        (countChar(col2, ' ') == 0) &&
+                        (countChar(col3, ' ') == 0) && (!xHasRow && !oHasRow)
         ) {
-            System.out.println("Draw");
+            result = "Draw";
         } else if (xHasRow) {
-            System.out.println("X wins");
+            result = "X wins";
         } else if (oHasRow) {
-            System.out.println("O wins");
+            result = "0 wins";
         }
+        return result;
     }
+
+    private static void printResult(String result) {
+        System.out.println(result);
+    }
+
+//    private static char[] takeInputField() {
+//        System.out.print("Enter cells: ");
+//        return scanner.next().toCharArray();
+//    }
+//
+//    private static char[][] createField(char[] input) {
+//        char[][] field = new char[3][3];
+//        field[0] = new char[]{input[0], input[1], input[2]};
+//        field[1] = new char[]{input[3], input[4], input[5]};
+//        field[2] = new char[]{input[6], input[7], input[8]};
+//        return field;
+//    }
 }
