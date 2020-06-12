@@ -24,9 +24,9 @@ public class Main {
 
     private static char[][] createBlankField() {
         char[][] field = new char[3][3];
-        field[0] = new char[]{'O', ' ', ' '};
-        field[1] = new char[]{'O', 'X', ' '};
-        field[2] = new char[]{' ', ' ', 'X'};
+        field[0] = new char[]{' ', ' ', ' '};
+        field[1] = new char[]{' ', ' ', ' '};
+        field[2] = new char[]{' ', ' ', ' '};
         return field;
     }
 
@@ -50,36 +50,32 @@ public class Main {
 
         do {
             System.out.print("Enter the coordinates: ");
-//            String coordinatesInput = scanner.nextLine();
-            scanner.nextLine();
+            String coordinatesInput = scanner.nextLine();
+            String[] cArray = coordinatesInput.split(" ");
             hasC0 = false;
             hasC1 = false;
             isEmpty = false;
 
-            if (scanner.hasNextInt()) {
-                c0 = scanner.nextInt();
+            if (cArray[0].matches("[0-9]+") && cArray[1].matches("[0-9]+")) {
+                c0 = Integer.parseInt(cArray[0]);
                 if (!(Arrays.asList(possibleCoordinates).contains(c0))) {
                     System.out.println("Coordinates should be from 1 to 3!");
                 } else if (Arrays.asList(possibleCoordinates).contains(c0)) {
                     hasC0 = true;
-                    if (scanner.hasNextInt()) {
-                        c1 = scanner.nextInt();
-                        if (!(Arrays.asList(possibleCoordinates).contains(c1))) {
-                            System.out.println("Coordinates should be from 1 to 3!");
-                        } else if (Arrays.asList(possibleCoordinates).contains(c1)) {
-                            hasC1 = true;
-                            if (checkIfEmpty(c0, c1, field)) {
-                                isEmpty = true;
-                            } else {
-                                System.out.println("This cell is occupied! Choose another one!");
-                            }
+                    c1 = Integer.parseInt(cArray[1]);
+                    if (!(Arrays.asList(possibleCoordinates).contains(c1))) {
+                        System.out.println("Coordinates should be from 1 to 3!");
+                    } else if (Arrays.asList(possibleCoordinates).contains(c1)) {
+                        hasC1 = true;
+                        if (checkIfEmpty(c0, c1, field)) {
+                            isEmpty = true;
+                        } else {
+                            System.out.println("This cell is occupied! Choose another one!");
                         }
-                    } else {
-                        System.out.println("You should enter numbers!");
                     }
+                } else {
+                    System.out.println("You should enter numbers!");
                 }
-            } else {
-                System.out.println("You should enter numbers!");
             }
         }
         while (!(hasC0 && hasC1 && isEmpty));
@@ -108,44 +104,44 @@ public class Main {
         int i = Integer.parseInt(String.valueOf(n1).concat(String.valueOf(n2)));
 
         switch (i) {
-            case 11 :
+            case 11:
                 n1 = 2;
                 n2 = 0;
                 break;
-            case 21 :
+            case 21:
                 n1 = 2;
                 n2 = 1;
                 break;
-            case 31 :
+            case 31:
                 n1 = 2;
                 n2 = 2;
                 break;
-            case 12 :
+            case 12:
                 n1 = 1;
                 n2 = 0;
                 break;
-            case 22 :
+            case 22:
                 n1 = 1;
                 n2 = 1;
                 break;
-            case 32 :
+            case 32:
                 n1 = 1;
                 n2 = 2;
                 break;
-            case 13 :
+            case 13:
                 n1 = 0;
                 n2 = 0;
                 break;
-            case 23 :
+            case 23:
                 n1 = 0;
                 n2 = 1;
                 break;
-            case 33 :
+            case 33:
                 n1 = 0;
                 n2 = 2;
                 break;
         }
-        return new int[] {n1, n2};
+        return new int[]{n1, n2};
     }
 
     private static int countChar(char[] chars, char c) {
@@ -158,7 +154,7 @@ public class Main {
         return count;
     }
 
-    private static String findState(char[][]field) {
+    private static String findState(char[][] field) {
         boolean xHasRow = false;
         boolean oHasRow = false;
         String result = "";
@@ -214,7 +210,7 @@ public class Main {
         } else if (xHasRow) {
             result = "X wins";
         } else if (oHasRow) {
-            result = "0 wins";
+            result = "O wins";
         }
         return result;
     }
@@ -222,17 +218,4 @@ public class Main {
     private static void printResult(String result) {
         System.out.println(result);
     }
-
-//    private static char[] takeInputField() {
-//        System.out.print("Enter cells: ");
-//        return scanner.next().toCharArray();
-//    }
-//
-//    private static char[][] createField(char[] input) {
-//        char[][] field = new char[3][3];
-//        field[0] = new char[]{input[0], input[1], input[2]};
-//        field[1] = new char[]{input[3], input[4], input[5]};
-//        field[2] = new char[]{input[6], input[7], input[8]};
-//        return field;
-//    }
 }
