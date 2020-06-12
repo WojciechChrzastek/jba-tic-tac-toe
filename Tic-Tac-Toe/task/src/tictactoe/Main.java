@@ -4,12 +4,21 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
+    private static final Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
-        char[] inputField = takeInputField();
-        printField(inputField);
-        int[] coordinates = takeInputCoordinates(inputField);
-        printFieldAfterMove(inputField, coordinates);
+//        char[] inputField = takeInputField();
+        final char[][] field = createField(takeInputField());
+        printField(field);
+        final int[] coordinates = takeInputCoordinates(field);
+        printFieldAfterMove(field, coordinates);
 //        findState(inputField);
+        scanner.close();
+    }
+
+    private static char[] takeInputField() {
+        System.out.print("Enter cells: ");
+        return scanner.next().toCharArray();
     }
 
     private static char[][] createField(char[] input) {
@@ -20,23 +29,22 @@ public class Main {
         return field;
     }
 
-    private static void printFieldAfterMove(char[] input, int[] coordinates) {
-        int n1 = coordinates[0];
-        int n2 = coordinates[1];
+    private static void printField(char[][] field) {
+        String line = "| %s %s %s |\n";
+        System.out.println("---------");
+        System.out.printf(line, field[0][0], field[0][1], field[0][2]);
+        System.out.printf(line, field[1][0], field[1][1], field[1][2]);
+        System.out.printf(line, field[2][0], field[2][1], field[2][2]);
+        System.out.println("---------");
+    }
 
-        int[] c = mapInputToNormalCoordinates(n1, n2);
-
-        char[][] field = createField(input);
+    private static void printFieldAfterMove(char[][] field, int[] coordinates) {
+        int[] c = mapInputToNormalCoordinates(coordinates[0], coordinates[1]);
         field[c[0]][c[1]] = 'X';
         printField(field);
     }
 
-    private static int[] takeInputCoordinates(char[] inputField) {
-        Scanner scanner = new Scanner(System.in);
-        // this prevents unnecessary next line when asking for scanner.nextLine();
-//        System.out.print("name: ");
-//        String line = scanner.next();
-
+    private static int[] takeInputCoordinates(char[][] field) {
         Integer[] possibleInputs = {1, 2, 3};
         int[] coordinates = {0, 0};
         int c0 = 4;
@@ -64,7 +72,7 @@ public class Main {
                             System.out.println("Coordinates should be from 1 to 3!");
                         } else if (Arrays.asList(possibleInputs).contains(c1)) {
                             hasC1 = true;
-                            if (checkIfEmpty(c0, c1, inputField)) {
+                            if (checkIfEmpty(c0, c1, field)) {
                                 isEmpty = true;
                             } else {
                                 System.out.println("This cell is occupied! Choose another one!");
@@ -126,22 +134,16 @@ public class Main {
                 n2 = 2;
                 break;
         }
-
-        return new int[]{n1, n2};
+        return new int[] {n1, n2};
     }
 
-    private static boolean checkIfEmpty(int c0, int c1, char[] inputField) {
-
-        char[][] inputtedField = createField(inputField);
-
+    private static boolean checkIfEmpty(int c0, int c1, char[][] field) {
         int[] c = mapInputToNormalCoordinates(c0, c1);
-
-        return inputtedField[c[0]][c[1]] == '_';
+        return field[c[0]][c[1]] == '_';
     }
 
     private static int countChar(char[] chars, char c) {
         int count = 0;
-
         for (char ch : chars) {
             if (ch == c) {
                 count++;
@@ -150,34 +152,9 @@ public class Main {
         return count;
     }
 
-    private static void printField(char[][] field) {
-        String line = "| %s %s %s |\n";
-
-        System.out.println("---------");
-        System.out.printf(line, field[0][0], field[0][1], field[0][2]);
-        System.out.printf(line, field[1][0], field[1][1], field[1][2]);
-        System.out.printf(line, field[2][0], field[2][1], field[2][2]);
-        System.out.println("---------");
-    }
-
-    private static void printField(char[] input) {
-        char[][] field = createField(input);
-        printField(field);
-
-    }
-
-    private static char[] takeInputField() {
-        System.out.print("Enter cells: ");
-        Scanner scanner = new Scanner(System.in);
-        return scanner.nextLine().toCharArray();
-    }
-
-    private static void findState(char[] input) {
-
+    private static void findState(char[] input, char[][]field) {
         boolean xHasRow = false;
         boolean oHasRow = false;
-
-        char[][] field = createField(input);
 
         char[] col1 = new char[]{input[0], input[3], input[6]};
         char[] col2 = new char[]{input[1], input[4], input[7]};
